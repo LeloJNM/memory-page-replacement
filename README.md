@@ -1,1 +1,2 @@
 # memory-page-replacement
+Simulador de algoritmos de substituição de páginas em memória virtual. Este projeto implementa três algoritmos clássicos de gerenciamento de memória: Ótimo (OPT), FIFO (First-In First-Out) e LRU (Least Recently Used). A simulação permite comparar o desempenho de cada algoritmo com base na quantidade de page faults gerados a partir de uma sequência de referências de páginas.
