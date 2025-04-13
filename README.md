@@ -1,130 +1,87 @@
 # memory-page-replacement
-Simulador de Algoritmos de Substituição de Páginas em Memória Virtual
-Este projeto implementa um simulador para comparar o desempenho de três algoritmos clássicos de gerenciamento de memória: Ótimo (OPT/OTM), FIFO (First-In First-Out) e LRU (Least Recently Used). O simulador calcula a quantidade de page faults ocorridos com base em uma sequência de referências a páginas, permitindo assim a comparação entre as estratégias de substituição.
 
-Funcionalidades
-FIFO: Utiliza uma fila para manter a ordem de chegada das páginas. Quando ocorre uma falta de página e a memória está cheia, a página mais antiga é removida.
+**Simulador de Algoritmos de Substituição de Páginas em Memória Virtual**
 
-LRU: Mantém uma lista ordenada segundo o uso recente das páginas. A cada acesso, uma página é atualizada para refletir o seu uso mais recente; quando necessário, a página menos recentemente utilizada é substituída.
+Este projeto implementa três algoritmos clássicos de gerenciamento de memória:
 
-OTM (Ótimo/Optimal): Analisa as referências futuras para tomar a decisão ideal de substituição, removendo a página que será utilizada no maior intervalo de tempo ou que não será utilizada novamente.
+- **Ótimo (OTM)**  
+- **FIFO (First-In First-Out)**  
+- **LRU (Least Recently Used)**  
 
-Estrutura do Projeto
-O projeto é desenvolvido em Python e é composto pelos seguintes arquivos principais:
+A simulação permite comparar o desempenho de cada algoritmo com base na quantidade de *page faults* gerados a partir de uma sequência de referências de páginas.
 
-main.py: Contém a implementação dos algoritmos (FIFO, LRU e OTM), funções de leitura do arquivo e a função principal que executa a simulação.
+---
 
-README.md: Este arquivo, que documenta o projeto, descrevendo sua finalidade, instruções de uso e detalhes técnicos.
+## Descrição da Entrada:
 
-Como Funciona
-Entrada:
-O simulador lê um arquivo contendo números inteiros.
+A entrada é composta por uma série de números inteiros, um por linha.  
 
-A primeira linha representa a quantidade de quadros de memória RAM disponíveis.
+- O **primeiro número** representa a **quantidade de quadros disponíveis na memória RAM**.  
+- Os **demais números** formam a **sequência de referências à memória**.
 
-As linhas subsequentes contêm a sequência de referências a páginas.
+---
 
-Exemplo de arquivo de entrada:
+## Descrição da Saída:
 
-4
-1
-2
-3
-4
-1
-2
-5
-1
-2
-3
-4
-5
-Processamento:
-Cada algoritmo processa a sequência de referências e conta a quantidade de page faults que ocorrem conforme as suas respectivas estratégias de substituição.
+A saída é composta por **três linhas**, cada uma contendo:  
 
-Saída:
-O simulador imprime a quantidade de page faults para cada algoritmo no seguinte formato:
+- A **sigla de um dos algoritmos** (`FIFO`, `OTM`, `LRU`)  
+- E a **quantidade de faltas de página** que ocorreram durante a simulação com aquele algoritmo.
 
-nginx
-FIFO 10
-OTM 6
-LRU 8
-Requisitos
-Python 3.x
+---
 
-Instruções de Uso
-Clone o repositório ou baixe os arquivos do projeto.
+## Exemplo
 
-Prepare o arquivo de entrada:
-Crie um arquivo de texto com os números de entrada conforme o exemplo acima. Por exemplo, entrada.txt.
+**Entrada:**
+- Quantidade de quadros: 4  
+- Sequência de referências: 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5  
 
-Execute o simulador:
-Abra o terminal, navegue até a pasta do projeto e execute:
+**Saída esperada:**
+- FIFO 10  
+- OTM 6  
+- LRU 8
 
-bash
-python main.py
-Em seguida, informe o caminho do arquivo de entrada quando solicitado.
+---
 
-Casos de Teste
-Você pode testar o simulador utilizando diferentes arquivos de entrada. Alguns casos de teste sugeridos:
+## Requisitos
 
-Caso Básico:
-Arquivo com 4 quadros e sequência conforme o exemplo:
+- Python 3.x
 
+---
 
-4
-1
-2
-3
-4
-1
-2
-5
-1
-2
-3
-4
-5
-Saída esperada:
+## Instruções de Uso
 
-nginx
-FIFO 10
-OTM 6
-LRU 8
-Memória Suficiente:
-Arquivo onde a quantidade de quadros é igual ou maior que o número de páginas únicas:
+1. **Clone o repositório ou baixe os arquivos do projeto.**
 
-5
-1
-2
-3
-4
-5
-1
-2
-3
-4
-5
-Saída esperada:
+2. **Prepare o arquivo de entrada:**  
+   Crie um arquivo de texto (`.txt`) com os números de entrada, um por linha, conforme o exemplo acima.
 
-nginx
-FIFO 5
-OTM 5
-LRU 5
-Capacidade Reduzida (1 Quadro):
-Arquivo para testar o comportamento com apenas um quadro:
+3. **Execute o simulador:**  
+   No terminal, navegue até a pasta do projeto e execute:
 
-1
-3
-3
-2
-1
-3
-2
-Saída esperada:
+   ```bash
+   python main.py
+   ```
 
-nginx
-FIFO 5
-OTM 5
-LRU 5
-Outros casos de teste podem ser criados para simular sequências alternadas, padrões crescentes/decrescentes, entre outros.
+   Quando solicitado, informe o caminho para o arquivo de entrada.
+
+---
+
+## Casos de Teste Sugeridos
+
+### Caso Básico:
+- 4 quadros
+- Referências: 1, 2, 3, 4, 1, 2, 5, 1, 2, 3, 4, 5  
+- Saída esperada: FIFO 10 | OTM 6 | LRU 8
+
+### Memória Suficiente:
+- 5 quadros
+- Referências: 1, 2, 3, 4, 5, 1, 2, 3, 4, 5  
+- Saída esperada: FIFO 5 | OTM 5 | LRU 5
+
+### Capacidade Reduzida (1 Quadro):
+- 1 quadro
+- Referências: 3, 3, 2, 1, 3, 2  
+- Saída esperada: FIFO 5 | OTM 5 | LRU 5
+
+---
