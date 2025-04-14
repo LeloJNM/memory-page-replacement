@@ -1,121 +1,171 @@
 def fifo(num_frames, references):
-    """Implementa o algoritmo FIFO (First-In, First-Out)."""
-    frames = []           # Inicializa a lista de quadros (representa a memória)
-    faults = 0            # Variável para contar as faltas de página
-    for page in references:  # Percorre cada página referenciada na lista
-        # Se a página não está presente nos quadros, ocorre uma falta de página
+    """
+    Implementa o algoritmo FIFO (First-In, First-Out).
+
+    Parâmetros:
+    - num_frames: número máximo de quadros disponíveis.
+    - references: lista de referências de páginas.
+
+    Procedimento:
+    - Inicia com uma lista vazia representando os quadros da memória.
+    - Para cada referência, se a página não estiver presente nos quadros,
+      conta como falta de página.
+    - Se houver espaço, adiciona a página; caso contrário, remove a página mais antiga (FIFO)
+      e insere a nova página.
+    
+    Retorna:
+    - O total de faltas de página.
+    """
+    frames = []  # Lista que representa os quadros de memória
+    faults = 0   # Contador de faltas de página
+    for page in references:
+        # Se a página não está nos quadros, temos uma falta de página
         if page not in frames:
-            faults += 1  # Incrementa o contador de faltas
-            # Se ainda há espaço nos quadros (número de quadros usados é menor que o máximo permitido)
+            faults += 1
+            # Se ainda há espaço disponível, adiciona a página
             if len(frames) < num_frames:
-                frames.append(page)  # Adiciona a página no final da lista
-            else:
-                # Se não há espaço, remove a página que entrou primeiro (posição 0 da lista, FIFO)
-                frames.pop(0)
-                # Adiciona a nova página ao final da lista
                 frames.append(page)
-    return faults  # Retorna o total de faltas de página ocorridas
+            else:
+                # Se não há espaço, remove a página que entrou primeiro (posição 0 da lista) e insere a nova
+                frames.pop(0)
+                frames.append(page)
+    return faults
 
 def lru(num_frames, references):
-    """Implementa o algoritmo LRU (Least Recently Used)."""
-    frames = []           # Inicializa a lista dos quadros
-    faults = 0            # Inicializa o contador de faltas de página
-    for page in references:  # Percorre cada página referenciada
-        # Se a página já está na memória
+    """
+    Implementa o algoritmo LRU (Least Recently Used).
+
+    Parâmetros:
+    - num_frames: número de quadros disponíveis.
+    - references: lista de referências de páginas.
+
+    Procedimento:
+    - Inicia com uma lista vazia para os quadros de memória.
+    - Ao acessar uma página:
+       - Se já está na memória, ela é removida e reinserida no final para indicar que foi recentemente usada.
+       - Se não estiver, conta como falta de página e insere-a.
+         Se a memória estiver cheia, remove a página que está há mais tempo sem uso (a primeira da lista).
+    
+    Retorna:
+    - O total de faltas de página.
+    """
+    frames = []  # Lista representando os quadros de memória
+    faults = 0   # Contador de faltas de página
+    for page in references:
         if page in frames:
-            # Remove a página da posição atual
-            frames.remove(page)
-            # Reinsere a página no final para atualizar seu uso recente
-            frames.append(page)
+            # Atualiza a página para o fim da lista para indicar uso recente
+            frames.remove(page) ##TIRA DA POSIÇÃO ATUAL DA FILA
+            frames.append(page) ##ADICIONA NO FINAL DA FILA(MAIS RECENTE
         else:
-            # Caso a página não esteja na memória, conta falta de página
-            faults += 1
-            # Se houver espaço disponível (menos páginas que o número máximo de quadros)
+            faults += 1  # Conta falta de página
+            # Se houver espaço, insere a página diretamente
             if len(frames) < num_frames:
-                frames.append(page)  # Adiciona a página no final
-            else:
-                # Se a memória está cheia, remove a página menos recentemente usada (a primeira da lista)
-                frames.pop(0)
-                # Insere a nova página no final, pois ela acaba de ser usada
                 frames.append(page)
-    return faults  # Retorna o total de faltas para o algoritmo LRU
+            else:
+                # Remove a página menos recentemente usada (primeira posição da lista)
+                frames.pop(0)
+                frames.append(page)
+    return faults
 
 def optimal(num_frames, references):
-    """Implementa o algoritmo OTM (Optimal Page Replacement)."""
-    frames = []           # Inicializa a lista de quadros na memória
-    faults = 0            # Contador de faltas de página
-    n = len(references)   # Número total de referências para facilitar o laço
+    """
+    Implementa o algoritmo OTM (Optimal Page Replacement).
+
+    Parâmetros:
+    - num_frames: número de quadros disponíveis.
+    - references: lista de referências de páginas.
+
+    Procedimento:
+    - Para cada página referenciada:
+       - Se já estiver na memória, não ocorre falta.
+       - Se não estiver, ocorre falta de página.
+       - Se houver espaço, insere a página; caso contrário, para cada página atualmente na memória,
+         busca-se o índice da próxima ocorrência. Se uma página não for referenciada novamente,
+         seu próximo uso é definido como infinito.
+       - Substitui a página que será usada mais tarde (ou nunca), ou seja, aquela com o maior índice de próxima ocorrência.
     
-    # Percorre cada referência com seu índice
+    Retorna:
+    - O total de faltas de página.
+    """
+    frames = []  # Lista representando os quadros de memória
+    faults = 0   # Contador de faltas de página
+    n = len(references)
+    
     for i, page in enumerate(references):
-        # Se a página já estiver em memória, não faz nada
         if page in frames:
+            # A página já está na memória, nenhum processamento adicional é necessário
             continue
-        faults += 1  # Caso contrário, ocorre uma falta de página
+        faults += 1  # Faltou a página
         
-        # Se ainda existe espaço na memória, apenas adiciona a página
         if len(frames) < num_frames:
+            # Se houver espaço, insere a página sem substituição
             frames.append(page)
         else:
-            # Lista que armazenará, para cada página no frame, o índice da sua próxima ocorrência
             next_uses = []
-            # Para cada página que está atualmente em memória
+            # Para cada página nos quadros, encontra o índice da próxima ocorrência
             for f in frames:
                 try:
-                    # Tenta encontrar a próxima referência para a página "f" a partir do índice atual + 1
                     next_use = references.index(f, i + 1)
                 except ValueError:
-                    # Se a página não for referenciada novamente, define seu próximo uso como infinito,
-                    # para dar prioridade à sua substituição
+                    # Se a página não for encontrada novamente, define como infinito
                     next_use = float('inf')
-                # Adiciona o índice da próxima ocorrência (ou infinito) à lista
                 next_uses.append(next_use)
-            # Identifica o índice da página com o maior valor em next_uses,
-            # ou seja, que será usada mais tarde ou nunca
+            # Identifica a página com a maior distância para o próximo uso
             idx_to_remove = next_uses.index(max(next_uses))
-            # Substitui a página identificada pela nova página
+            # Substitui a página com a nova referência
             frames[idx_to_remove] = page
-    return faults  # Retorna o número total de faltas de página para o algoritmo OTM
+    return faults
 
 def ler_arquivo(caminho_arquivo):
     """
-    Lê o arquivo do caminho fornecido e retorna:
-    - num_frames: número de quadros de memória (primeiro número do arquivo)
-    - references: lista das referências de página (demais números do arquivo)
+    Lê um arquivo e extrai os números inteiros para:
+    - num_frames: o número de quadros de memória (primeiro número).
+    - references: a lista de referências de páginas (demais números).
+
+    Parâmetros:
+    - caminho_arquivo: caminho do arquivo de entrada.
+    
+    Retorna:
+    - Uma tupla (num_frames, references)
+
+    Caso o arquivo esteja vazio ou não contenha números válidos, é gerada uma exceção.
     """
     with open(caminho_arquivo, 'r') as f:
-        linhas = f.readlines()  # Lê todas as linhas do arquivo
-    # Remove espaços e quebras de linha e converte cada linha em inteiro
+        linhas = f.readlines()
+    # Converte cada linha em um inteiro, ignorando linhas vazias
     valores = [int(linha.strip()) for linha in linhas if linha.strip() != '']
     if not valores:
-        # Se o arquivo estiver vazio ou sem números válidos, gera um erro
         raise ValueError("O arquivo está vazio ou não possui números válidos.")
-    num_frames = valores[0]    # O primeiro número indica o número de quadros disponíveis
-    references = valores[1:]   # Os demais números representam as referências de páginas
-    return num_frames, references  # Retorna os valores lidos
+    num_frames = valores[0]    # Primeiro número: quantidade de quadros
+    references = valores[1:]   # Demais números: referências de páginas
+    return num_frames, references
 
 def main():
-    # Solicita que o usuário digite o caminho do arquivo que contém os números de entrada
+    """
+    Função principal que executa o programa.
+    
+    Procedimento:
+    1. Solicita ao usuário o caminho do arquivo de entrada.
+    2. Lê e processa os dados do arquivo.
+    3. Calcula as faltas de página para cada algoritmo de substituição.
+    4. Exibe os resultados no formato exigido: ALGORITMO N.
+    """
     caminho = input("Digite o caminho do arquivo de entrada: ").strip()
     try:
-        # Tenta ler o arquivo e extrair os dados
         num_frames, references = ler_arquivo(caminho)
     except Exception as e:
-        # Em caso de erro (por exemplo, arquivo não encontrado ou dados inválidos), exibe a mensagem de erro
         print(f"Erro ao ler o arquivo: {e}")
         return
     
-    # Calcula o número de faltas de página para cada algoritmo de substituição
+    # Calcula as faltas de página para cada algoritmo
     faltas_fifo = fifo(num_frames, references)
     faltas_otm = optimal(num_frames, references)
     faltas_lru = lru(num_frames, references)
     
-    # Exibe os resultados no formato exigido:
-    # Nome do algoritmo seguido pelo número de faltas de página
+    # Exibe os resultados conforme o formato solicitado:
     print(f"FIFO {faltas_fifo}")
     print(f"OTM {faltas_otm}")
     print(f"LRU {faltas_lru}")
 
-# Verifica se o script está sendo executado como programa principal
 if __name__ == "__main__":
     main()
